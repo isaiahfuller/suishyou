@@ -1,0 +1,38 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  @apply bg-slate-50 text-slate-950 dark:bg-slate-900 dark:text-slate-50;
+}
+
+h1 {
+  @apply text-4xl;
+}
+
+h2 {
+  @apply text-2xl;
+}
+
+h3 {
+  @apply text-xl;
+}
+
+select {
+  @apply p-1 m-1 bg-inherit;
+  @apply border rounded;
+}
+
+.main {
+  @apply h-screen w-screen;
+  @apply flex flex-col
+}
+
+.button {
+  @apply border rounded p-2;
+}
+
+.container {
+  @apply flex-col;
+  @apply m-auto h-full w-full;
+}

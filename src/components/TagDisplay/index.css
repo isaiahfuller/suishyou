@@ -1,0 +1,10 @@
+
+
+.submit-button {
+  @apply text-2xl;
+  @apply m-2;
+}
+
+.form-submit {
+  @apply flex;
+}
