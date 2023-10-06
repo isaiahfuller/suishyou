@@ -1,15 +1,15 @@
 import { useEffect, useState } from "react";
 import "./index.css";
 import TagDisplay from "../TagDisplay";
-import Result from "../Result";
+import Carousel from "../Carousel";
 import { AnimeEntry, AnimeListEntry } from "../../interfaces";
 
 export default function List(props: { accessToken: string }) {
   const { accessToken } = props;
   const [animeList, setAnimeList] = useState<AnimeListEntry[]>([]);
   const [tagList, setTags] = useState({});
-  const [recommendations, setRecs] = useState([]);
-  const [usedTags, setUsedTags] = useState<string[]>([]);
+  const [recommendations, setRecs] = useState<[]>([]);
+  const [usedTags, setUsedTags] = useState<Set<string>[]>([]);
 
   useEffect(() => {
     const query = `
@@ -146,10 +146,11 @@ export default function List(props: { accessToken: string }) {
     demographic: string
   ) {
     const tags = [mainCast, trait, setting, scene, time, demographic];
-    const usedTags = new Set();
+    const currentTags = new Set();
     let results = [];
+    let resCount = 0;
     do {
-      const tagNames = tags.filter((e) => !usedTags.has(e));
+      const tagNames = tags.filter((e) => !currentTags.has(e));
       const query = `
       {
         Page(page:1, perPage:10){
@@ -193,18 +194,20 @@ export default function List(props: { accessToken: string }) {
         .then((res) => res.json())
         .then((res) => {
           results = res.data.Page.media;
-          usedTags.add(
+          currentTags.add(
             tagNames[Math.floor(Math.random() * (tagNames.length - 1))]
           );
           if (results.length) {
+            resCount++;
             console.log(results);
             console.log(tagNames);
-            setRecs(results);
-            setUsedTags(tagNames);
+            setRecs([...recommendations, results]);
+            setUsedTags([...usedTags, currentTags]);
           }
         });
       // break;
     } while (!results.length);
+    console.log(usedTags);
   }
 
   if (animeList && animeList.length) {
@@ -212,14 +215,18 @@ export default function List(props: { accessToken: string }) {
       <div className="content">
         <TagDisplay tags={tagList} search={search} />
         <div />
-        {recommendations.length ? <h1>{usedTags.slice(0,usedTags.length-1).join(", ")} and {usedTags.at(-1)}</h1> : null}
         <div className="results">
           {recommendations.length
-            ? recommendations.map((e: AnimeEntry) => (
-                <div key={e.id}>
-                  <Result entry={e} />
+            ? recommendations.map((e, i) => {
+              let str = ""
+              usedTags[i].forEach(e => {
+                str += e.replace(/"/g,"") + ", "
+              });
+                return <div key={i}>
+                  <h1>{str.substring(0,str.length-2)}</h1>
+                  <Carousel recommendations={e} />
                 </div>
-              ))
+              })
             : null}
         </div>
       </div>

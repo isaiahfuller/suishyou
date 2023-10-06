@@ -6,6 +6,10 @@ html {
   @apply bg-slate-50 text-slate-950 dark:bg-slate-900 dark:text-slate-50;
 }
 
+body {
+  @apply w-screen h-screen overflow-x-hidden
+}
+
 h1 {
   @apply text-4xl;
 }

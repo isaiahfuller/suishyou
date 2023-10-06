@@ -1,5 +1,8 @@
 .result {
-  @apply flex flex-col p-1 m-1 w-52 h-80;
+  @apply p-0 m-0
+}
+.result a {
+  @apply flex flex-col m-1 w-52 h-80;
   @apply items-center text-center justify-center;
 }
 
