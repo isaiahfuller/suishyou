@@ -8,8 +8,9 @@ export default function List(props: { accessToken: string }) {
   const { accessToken } = props;
   const [animeList, setAnimeList] = useState<AnimeListEntry[]>([]);
   const [tagList, setTags] = useState({});
-  const [recommendations, setRecs] = useState<[]>([]);
-  const [usedTags, setUsedTags] = useState<Set<string>[]>([]);
+  const [recommendations, setRecs] = useState<AnimeEntry[] | Array<any>>([]);
+  const [usedTags, setUsedTags] = useState<string[]>([]);
+  const [displayTags, setDisplayTags] = useState(structuredClone(tagList));
 
   useEffect(() => {
     const query = `
@@ -136,6 +137,63 @@ export default function List(props: { accessToken: string }) {
     }
     setTags(tags);
   }
+  const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
+
+  function weightedRandom(min: number, max: number) {
+    return Math.ceil(max / (Math.random() * max + min));
+  }
+
+  async function randomSearch(tags: { [key: string]: any } = displayTags) {
+    console.log(tags);
+    console.log(tags["Cast-Main Cast"].keys);
+    const mainCast = tags["Cast-Main Cast"].keys.sort(
+      (a: string | number, b: string | number) =>
+        tags["Cast-Main Cast"][b].listScore -
+        tags["Cast-Main Cast"][a].listScore
+    );
+    const trait = tags["Cast-Traits"].keys.sort(
+      (a: string | number, b: string | number) =>
+        tags["Cast-Traits"][b].listScore - tags["Cast-Traits"][a].listScore
+    );
+    const setting = tags["Setting-Universe"].keys.sort(
+      (a: string | number, b: string | number) =>
+        tags["Setting-Universe"][b].listScore -
+        tags["Setting-Universe"][a].listScore
+    );
+    const scene = tags["Setting-Scene"].keys.sort(
+      (a: string | number, b: string | number) =>
+        tags["Setting-Scene"][b].listScore - tags["Setting-Scene"][a].listScore
+    );
+    const time = tags["Setting-Time"].keys.sort(
+      (a: string | number, b: string | number) =>
+        tags["Setting-Time"][b].listScore - tags["Setting-Time"][a].listScore
+    );
+    const demographic = tags["Demographic"].keys.sort(
+      (a: string | number, b: string | number) =>
+        tags["Demographic"][b].listScore - tags["Demographic"][a].listScore
+    );
+    console.log(mainCast, trait, setting, scene, time, demographic);
+    const i = new Array(3);
+    for await (const n of i) {
+      const idxs = [
+        weightedRandom(1, mainCast.length - 1) - 1,
+        weightedRandom(1, trait.length - 1) - 1,
+        weightedRandom(1, setting.length - 1) - 1,
+        weightedRandom(1, scene.length - 1) - 1,
+        weightedRandom(1, time.length - 1) - 1,
+        weightedRandom(1, demographic.length - 1) - 1,
+      ];
+      console.log(idxs);
+      search(
+        `"${mainCast[idxs[0]]}"`,
+        `"${trait[idxs[1]]}"`,
+        `"${setting[idxs[2]]}"`,
+        `"${scene[idxs[3]]}"`,
+        `"${time[idxs[4]]}"`,
+        `"${demographic[idxs[5]]}"`
+      );
+    }
+  }
 
   async function search(
     mainCast: string,
@@ -145,15 +203,24 @@ export default function List(props: { accessToken: string }) {
     time: string,
     demographic: string
   ) {
+    await delay(100);
     const tags = [mainCast, trait, setting, scene, time, demographic];
+    console.log(tags);
     const currentTags = new Set();
     let results = [];
-    let resCount = 0;
+    let attempts = 0;
     do {
       const tagNames = tags.filter((e) => !currentTags.has(e));
+      let str = "";
+      tagNames.forEach((e) => {
+        str += e.replace(/"/g, "") + ", ";
+      });
+      str = str.substring(0, str.length - 2);
+      if (usedTags.includes(str)) continue;
+      console.log(usedTags, str);
       const query = `
       {
-        Page(page:1, perPage:10){
+        Page(page:0, perPage:10){
           media(tag_in:[${tagNames.join(",")}],type:ANIME){
             title{
               userPreferred,
@@ -198,34 +265,46 @@ export default function List(props: { accessToken: string }) {
             tagNames[Math.floor(Math.random() * (tagNames.length - 1))]
           );
           if (results.length) {
-            resCount++;
+            attempts = 0;
             console.log(results);
             console.log(tagNames);
             setRecs([...recommendations, results]);
-            setUsedTags([...usedTags, currentTags]);
-          }
+            setUsedTags((prev) => [...prev, str]);
+          } else attempts++;
         });
       // break;
+      if (attempts > 0 && attempts % 5 === 0) {
+        if (attempts === 25) break;
+        currentTags.clear();
+      }
     } while (!results.length);
     console.log(usedTags);
   }
-
+  
   if (animeList && animeList.length) {
     return (
       <div className="content">
-        <TagDisplay tags={tagList} search={search} />
+        <TagDisplay
+          tags={tagList}
+          search={search}
+          randomSearch={randomSearch}
+          setDisplayTags={setDisplayTags}
+          displayTags={displayTags}
+        />
         <div />
         <div className="results">
           {recommendations.length
             ? recommendations.map((e, i) => {
-              let str = ""
-              usedTags[i].forEach(e => {
-                str += e.replace(/"/g,"") + ", "
-              });
-                return <div key={i}>
-                  <h1>{str.substring(0,str.length-2)}</h1>
-                  <Carousel recommendations={e} />
-                </div>
+                return (
+                  <div key={i}>
+                    <div>
+                      <h1>{[...usedTags[i]]}</h1>
+                      <div>
+                        <Carousel recommendations={e} />
+                      </div>
+                    </div>
+                  </div>
+                );
               })
             : null}
         </div>

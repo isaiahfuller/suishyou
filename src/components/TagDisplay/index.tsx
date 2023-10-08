@@ -3,6 +3,9 @@ import "./index.css";
 
 export default function TagDisplay(props: {
   tags: { [key: string]: any };
+  displayTags: { [key: string]: any };
+  setDisplayTags: any;
+  randomSearch: any;
   search: (
     mainCast: string,
     trait: string,
@@ -14,8 +17,7 @@ export default function TagDisplay(props: {
 }) {
   const categories = Object.keys(props.tags);
   const [loading, setLoading] = useState(true);
-  const { tags, search } = props;
-  const [displayTags, setDisplayTags] = useState(structuredClone(tags));
+  const { tags, search, displayTags, setDisplayTags, randomSearch } = props;
   const [mainCast, setMainCast] = useState("");
   const [trait, setTrait] = useState("");
   const [scene, setScene] = useState("");
@@ -43,6 +45,7 @@ export default function TagDisplay(props: {
       );
       tempTags[cat].keys = keys;
     }
+    randomSearch(tempTags)
     setDisplayTags(tempTags);
     setLoading(false);
   }, []);
@@ -56,7 +59,14 @@ export default function TagDisplay(props: {
   function handleSubmit(e: React.FormEvent<any>) {
     e.preventDefault();
     console.log(mainCast, trait, setting, scene, time, demographic);
-    search(`"${mainCast}"`, `"${trait}"`, `"${setting}"`, `"${scene}"`, `"${time}"`, `"${demographic}"`);
+    search(
+      `"${mainCast}"`,
+      `"${trait}"`,
+      `"${setting}"`,
+      `"${scene}"`,
+      `"${time}"`,
+      `"${demographic}"`
+    );
   }
 
   if (loading) return <p>Processing List...</p>;

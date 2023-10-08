@@ -16,5 +16,5 @@ table * {
 }
 
 .results {
-  @apply flex items-center m-auto flex-wrap;
+  @apply flex-col items-center m-auto;
 }

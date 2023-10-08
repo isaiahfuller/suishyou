@@ -1,3 +1,27 @@
 .carousel{
-  @apply flex p-0 m-0
+  @apply flex p-0 m-0;
+}
+
+.carousel-container {
+  @apply w-[85vw] overflow-hidden;
+}
+
+.carousel-box {
+  --mask: linear-gradient(
+      to right,
+      rgba(0, 0, 0, 1) 0,
+      rgba(0, 0, 0, 1) 90%,
+      rgba(0, 0, 0, 0) 95%,
+      rgba(0, 0, 0, 0) 0
+    )
+    100% 50% / 100% 100% repeat-y;
+  mask: var(--mask);
+}
+
+.carousel-nav {
+  @apply flex justify-between items-baseline;
+}
+
+.progress-bar{
+  @apply h-2 w-full bg-slate-100;
 }
