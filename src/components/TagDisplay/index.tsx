@@ -45,6 +45,7 @@ export default function TagDisplay(props: {
       );
       tempTags[cat].keys = keys;
     }
+    // console.log(tempTags)
     randomSearch(tempTags)
     setDisplayTags(tempTags);
     setLoading(false);
@@ -69,69 +70,70 @@ export default function TagDisplay(props: {
     );
   }
 
+  // if (loading) return <p>Processing List...</p>;
   if (loading) return <p>Processing List...</p>;
-  return (
-    <div>
-      <form onSubmit={handleSubmit}>
-        <h1>
-          I want to watch a show with
-          <select id="main-cast" onChange={(e) => setMainCast(e.target.value)}>
-            {displayTags["Cast-Main Cast"].keys.map((e: string, i: number) => {
-              if (!mainCast.length && !i) setMainCast(e);
-              return <option key={i}>{e}</option>;
-            })}
-          </select>
-          characters, with
-          <select id="traits" onChange={(e) => setTrait(e.target.value)}>
-            {displayTags["Cast-Traits"].keys.map((e: string, i: number) => {
-              if (!trait.length && !i) setTrait(e);
-              return <option key={i}>{e}</option>;
-            })}
-          </select>
-          in a
-          <select id="setting" onChange={(e) => setSetting(e.target.value)}>
-            {displayTags["Setting-Universe"].keys.map(
-              (e: string, i: number) => {
-                if (!setting.length && !i) setSetting(e);
-                return <option key={i}>{e}</option>;
-              }
-            )}
-          </select>
-          setting with
-          <select id="scene" onChange={(e) => setScene(e.target.value)}>
-            {displayTags["Setting-Scene"].keys.map((e: string, i: number) => {
-              if (!scene.length && !i) setScene(e);
-              return <option key={i}>{e}</option>;
-            })}
-          </select>
-          , during
-          <select id="time" onChange={(e) => setTime(e.target.value)}>
-            {displayTags["Setting-Time"].keys.map((e: string, i: number) => {
-              if (!time.length && !i) setTime(e);
-              return <option key={i}>{e}</option>;
-            })}
-          </select>
-          , aimed at
-          <select
-            id="demographic"
-            onChange={(e) => setDemographic(e.target.value)}
-          >
-            {displayTags["Demographic"].keys.map((e: string, i: number) => {
-              if (!demographic.length && !i) setDemographic(e);
-              return <option key={i}>{e}</option>;
-            })}
-          </select>
-          .
-        </h1>
-        <div className="form-submit">
-          <input
-            type="submit"
-            value="Submit"
-            className="button submit-button"
-            onClick={(e) => console.log(e)}
-          />
-        </div>
-      </form>
-    </div>
-  );
+  // return (
+  //   <div>
+  //     <form onSubmit={handleSubmit}>
+  //       <h1>
+  //         I want to watch a show with
+  //         <select id="main-cast" onChange={(e) => setMainCast(e.target.value)}>
+  //           {displayTags["Cast-Main Cast"].keys.map((e: string, i: number) => {
+  //             if (!mainCast.length && !i) setMainCast(e);
+  //             return <option key={i}>{e}</option>;
+  //           })}
+  //         </select>
+  //         characters, with
+  //         <select id="traits" onChange={(e) => setTrait(e.target.value)}>
+  //           {displayTags["Cast-Traits"].keys.map((e: string, i: number) => {
+  //             if (!trait.length && !i) setTrait(e);
+  //             return <option key={i}>{e}</option>;
+  //           })}
+  //         </select>
+  //         in a
+  //         <select id="setting" onChange={(e) => setSetting(e.target.value)}>
+  //           {displayTags["Setting-Universe"].keys.map(
+  //             (e: string, i: number) => {
+  //               if (!setting.length && !i) setSetting(e);
+  //               return <option key={i}>{e}</option>;
+  //             }
+  //           )}
+  //         </select>
+  //         setting with
+  //         <select id="scene" onChange={(e) => setScene(e.target.value)}>
+  //           {displayTags["Setting-Scene"].keys.map((e: string, i: number) => {
+  //             if (!scene.length && !i) setScene(e);
+  //             return <option key={i}>{e}</option>;
+  //           })}
+  //         </select>
+  //         , during
+  //         <select id="time" onChange={(e) => setTime(e.target.value)}>
+  //           {displayTags["Setting-Time"].keys.map((e: string, i: number) => {
+  //             if (!time.length && !i) setTime(e);
+  //             return <option key={i}>{e}</option>;
+  //           })}
+  //         </select>
+  //         , aimed at
+  //         <select
+  //           id="demographic"
+  //           onChange={(e) => setDemographic(e.target.value)}
+  //         >
+  //           {displayTags["Demographic"].keys.map((e: string, i: number) => {
+  //             if (!demographic.length && !i) setDemographic(e);
+  //             return <option key={i}>{e}</option>;
+  //           })}
+  //         </select>
+  //         .
+  //       </h1>
+  //       <div className="form-submit">
+  //         <input
+  //           type="submit"
+  //           value="Submit"
+  //           className="button submit-button"
+  //           onClick={(e) => console.log(e)}
+  //         />
+  //       </div>
+  //     </form>
+  //   </div>
+  // );
 }

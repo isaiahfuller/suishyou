@@ -12,10 +12,11 @@ export default function Carousel({ recommendations }: props) {
   const [scope, animate] = useAnimate();
   const [idx, setIdx] = useState(0);
   const [transform, setTransform] = useState(0);
+  console.log(recommendations)
 
   // 208px per entry
   function paginate(direction: number) {
-    console.log(direction, recommendations.length);
+    // console.log(direction, recommendations.length, recommendations);
     let newDir = idx + direction;
     if (newDir < 0) newDir = 0;
     if (newDir > recommendations.length - 1)
@@ -28,7 +29,7 @@ export default function Carousel({ recommendations }: props) {
     let newTransform = transform;
     newTransform = -i * 216;
     if (newTransform > 0) newTransform = 0;
-    console.log(scope.current, newTransform);
+    // console.log(scope.current, newTransform);
     if (scope.current) {
       animate(scope.current, { x: newTransform + "px" }, { duration: 0.3 });
     }

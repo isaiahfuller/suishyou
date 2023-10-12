@@ -3,6 +3,7 @@ import "./index.css";
 import TagDisplay from "../TagDisplay";
 import Carousel from "../Carousel";
 import { AnimeEntry, AnimeListEntry } from "../../interfaces";
+import Airing from "../Airing";
 
 export default function List(props: { accessToken: string }) {
   const { accessToken } = props;
@@ -33,7 +34,7 @@ export default function List(props: { accessToken: string }) {
     })
       .then((res) => res.json())
       .then((res) => {
-        console.log(res.data.Viewer.id);
+        // console.log(res.data.Viewer.id);
         const id = parseInt(res.data.Viewer.id);
         getList(id);
       });
@@ -113,7 +114,7 @@ export default function List(props: { accessToken: string }) {
             )
             .filter((e) => e.score > 0)
         );
-        getTags(combinedList.filter((e) => e.score > 0));
+        setTags(getTags(combinedList.filter((e) => e.score > 0)));
       });
   }
 
@@ -135,7 +136,7 @@ export default function List(props: { accessToken: string }) {
         });
       }
     }
-    setTags(tags);
+    return tags;
   }
   const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
 
@@ -144,8 +145,8 @@ export default function List(props: { accessToken: string }) {
   }
 
   async function randomSearch(tags: { [key: string]: any } = displayTags) {
-    console.log(tags);
-    console.log(tags["Cast-Main Cast"].keys);
+    // console.log(tags);
+    // console.log(tags["Cast-Main Cast"].keys);
     const mainCast = tags["Cast-Main Cast"].keys.sort(
       (a: string | number, b: string | number) =>
         tags["Cast-Main Cast"][b].listScore -
@@ -172,27 +173,24 @@ export default function List(props: { accessToken: string }) {
       (a: string | number, b: string | number) =>
         tags["Demographic"][b].listScore - tags["Demographic"][a].listScore
     );
-    console.log(mainCast, trait, setting, scene, time, demographic);
-    const i = new Array(3);
-    for await (const n of i) {
-      const idxs = [
-        weightedRandom(1, mainCast.length - 1) - 1,
-        weightedRandom(1, trait.length - 1) - 1,
-        weightedRandom(1, setting.length - 1) - 1,
-        weightedRandom(1, scene.length - 1) - 1,
-        weightedRandom(1, time.length - 1) - 1,
-        weightedRandom(1, demographic.length - 1) - 1,
-      ];
-      console.log(idxs);
-      search(
-        `"${mainCast[idxs[0]]}"`,
-        `"${trait[idxs[1]]}"`,
-        `"${setting[idxs[2]]}"`,
-        `"${scene[idxs[3]]}"`,
-        `"${time[idxs[4]]}"`,
-        `"${demographic[idxs[5]]}"`
-      );
-    }
+    // console.log(mainCast, trait, setting, scene, time, demographic);
+    const idxs = [
+      weightedRandom(1, mainCast.length) - 1,
+      weightedRandom(1, trait.length) - 1,
+      weightedRandom(1, setting.length) - 1,
+      weightedRandom(1, scene.length) - 1,
+      weightedRandom(1, time.length) - 1,
+      weightedRandom(1, demographic.length) - 1,
+    ];
+    // console.log(idxs);
+    search(
+      `"${mainCast[idxs[0]]}"`,
+      `"${trait[idxs[1]]}"`,
+      `"${setting[idxs[2]]}"`,
+      `"${scene[idxs[3]]}"`,
+      `"${time[idxs[4]]}"`,
+      `"${demographic[idxs[5]]}"`
+    );
   }
 
   async function search(
@@ -205,7 +203,7 @@ export default function List(props: { accessToken: string }) {
   ) {
     await delay(100);
     const tags = [mainCast, trait, setting, scene, time, demographic];
-    console.log(tags);
+    // console.log(tags);
     const currentTags = new Set();
     let results = [];
     let attempts = 0;
@@ -217,7 +215,7 @@ export default function List(props: { accessToken: string }) {
       });
       str = str.substring(0, str.length - 2);
       if (usedTags.includes(str)) continue;
-      console.log(usedTags, str);
+      // console.log(usedTags, str);
       const query = `
       {
         Page(page:0, perPage:10){
@@ -266,8 +264,8 @@ export default function List(props: { accessToken: string }) {
           );
           if (results.length) {
             attempts = 0;
-            console.log(results);
-            console.log(tagNames);
+            // console.log(results);
+            // console.log(tagNames);
             setRecs([...recommendations, results]);
             setUsedTags((prev) => [...prev, str]);
           } else attempts++;
@@ -278,9 +276,9 @@ export default function List(props: { accessToken: string }) {
         currentTags.clear();
       }
     } while (!results.length);
-    console.log(usedTags);
+    // console.log(usedTags);
   }
-  
+
   if (animeList && animeList.length) {
     return (
       <div className="content">
@@ -291,6 +289,7 @@ export default function List(props: { accessToken: string }) {
           setDisplayTags={setDisplayTags}
           displayTags={displayTags}
         />
+        {Object.keys(displayTags).length ? <Airing tags={displayTags} /> : null}
         <div />
         <div className="results">
           {recommendations.length
