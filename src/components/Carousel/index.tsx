@@ -43,7 +43,7 @@ export default function Carousel({ recommendations }: props) {
           ref={scope}
           drag="x"
           dragMomentum={false}
-          onDragEnd={(event, info) =>
+          onDragEnd={(_, info) =>
             paginate(-Math.round(info.offset.x / 208))
           }
         >

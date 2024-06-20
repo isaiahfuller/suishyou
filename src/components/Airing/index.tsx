@@ -96,7 +96,7 @@ export default function Airing(props: { tags: { [key: string]: any } }) {
   else
     return (
       <div className="results">
-        <h1>Currently Airing</h1>
+        <h1 className="py-2">Recommended Currently Airing</h1>
         <Carousel recommendations={list} />
       </div>
     );

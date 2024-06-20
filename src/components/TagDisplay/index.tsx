@@ -17,13 +17,13 @@ export default function TagDisplay(props: {
 }) {
   const categories = Object.keys(props.tags);
   const [loading, setLoading] = useState(true);
-  const { tags, search, displayTags, setDisplayTags, randomSearch } = props;
-  const [mainCast, setMainCast] = useState("");
-  const [trait, setTrait] = useState("");
-  const [scene, setScene] = useState("");
-  const [time, setTime] = useState("");
-  const [setting, setSetting] = useState("");
-  const [demographic, setDemographic] = useState("");
+  const { tags, setDisplayTags, randomSearch } = props;
+  // const [mainCast, setMainCast] = useState("");
+  // const [trait, setTrait] = useState("");
+  // const [scene, setScene] = useState("");
+  // const [time, setTime] = useState("");
+  // const [setting, setSetting] = useState("");
+  // const [demographic, setDemographic] = useState("");
 
   useEffect(() => {
     const tempTags = structuredClone(tags);
@@ -57,18 +57,18 @@ export default function TagDisplay(props: {
     return Math.round((rank * score * score) / 10000);
   }
 
-  function handleSubmit(e: React.FormEvent<any>) {
-    e.preventDefault();
-    console.log(mainCast, trait, setting, scene, time, demographic);
-    search(
-      `"${mainCast}"`,
-      `"${trait}"`,
-      `"${setting}"`,
-      `"${scene}"`,
-      `"${time}"`,
-      `"${demographic}"`
-    );
-  }
+  // function handleSubmit(e: React.FormEvent<any>) {
+  //   e.preventDefault();
+  //   console.log(mainCast, trait, setting, scene, time, demographic);
+  //   search(
+  //     `"${mainCast}"`,
+  //     `"${trait}"`,
+  //     `"${setting}"`,
+  //     `"${scene}"`,
+  //     `"${time}"`,
+  //     `"${demographic}"`
+  //   );
+  // }
 
   // if (loading) return <p>Processing List...</p>;
   if (loading) return <p>Processing List...</p>;

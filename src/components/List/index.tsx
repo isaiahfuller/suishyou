@@ -291,13 +291,18 @@ export default function List(props: { accessToken: string }) {
         />
         {Object.keys(displayTags).length ? <Airing tags={displayTags} /> : null}
         <div />
+        <hr />
+        <div className="results-header">
+          <h1 className="flex-shrink">Recommended by tags</h1>
+          <div className="flex-grow" />
+        </div>
         <div className="results">
           {recommendations.length
             ? recommendations.map((e, i) => {
                 return (
                   <div key={i}>
                     <div>
-                      <h1>{[...usedTags[i]]}</h1>
+                      <h2 className="py-2">{[...usedTags[i]]}</h2>
                       <div>
                         <Carousel recommendations={e} />
                       </div>

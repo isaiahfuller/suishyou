@@ -18,3 +18,7 @@ table * {
 .results {
   @apply flex-col items-center m-auto;
 }
+
+.results-header {
+  @apply flex w-[85vw] m-auto;
+}
