@@ -11,6 +11,7 @@ export default function Airing(props: { tags: { [key: string]: any } }) {
   }, []);
 
   function getAiringAnime(page = 1, tempList: AnimeEntry[]) {
+    const currentDate = new Date();
     const query = `
     {
       Page(page: ${page}) {
@@ -21,7 +22,7 @@ export default function Airing(props: { tags: { [key: string]: any } }) {
           lastPage
           hasNextPage
         }
-        media(status:RELEASING, seasonYear:2023, isAdult:false, format_in:[TV,OVA,ONA]) {
+        media(status:RELEASING, seasonYear:${currentDate.getFullYear()}, isAdult:false, format_in:[TV,OVA,ONA]) {
           id
           title {
             romaji
@@ -79,7 +80,7 @@ export default function Airing(props: { tags: { [key: string]: any } }) {
     for (const entry of entries) {
       for (const tag of entry.tags) {
         if (!tags[tag.category] || !tags[tag.category][tag.name]) continue;
-        const score = tags[tag.category][tag.name].listScore * (tag.rank/100);
+        const score = tags[tag.category][tag.name].listScore * (tag.rank / 100);
         scores.set(
           entry.id,
           scores.has(entry.id) ? scores.get(entry.id) + score : score
