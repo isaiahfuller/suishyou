@@ -1,9 +1,9 @@
-.carousel{
+.carousel {
   @apply flex p-0 m-0;
 }
 
 .carousel-container {
-  @apply w-[85vw] overflow-hidden;
+  @apply w-[85vw];
 }
 
 .carousel-box {
@@ -22,6 +22,6 @@
   @apply flex justify-between items-baseline;
 }
 
-.progress-bar{
+.progress-bar {
   @apply h-2 w-full bg-slate-100;
 }

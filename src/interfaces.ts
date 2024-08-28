@@ -1,5 +1,3 @@
-
-
 export interface AnimeTag {
   name: string;
   rank: number;
@@ -26,10 +24,17 @@ export interface AnimeEntry {
     large: string;
   };
   siteUrl: string;
+  isAdult: boolean;
 }
 
 export interface AnimeListEntry {
   media: AnimeEntry;
   progress: number;
   score: number;
+}
+
+export interface AnimeList {
+  name: string;
+  status: string;
+  entries: AnimeListEntry[];
 }

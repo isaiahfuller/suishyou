@@ -6,6 +6,7 @@ export default function TagDisplay(props: {
   displayTags: { [key: string]: any };
   setDisplayTags: any;
   randomSearch: any;
+  averageScore: number;
   search: (
     mainCast: string,
     trait: string,
@@ -17,7 +18,7 @@ export default function TagDisplay(props: {
 }) {
   const categories = Object.keys(props.tags);
   const [loading, setLoading] = useState(true);
-  const { tags, setDisplayTags, randomSearch } = props;
+  const { tags, setDisplayTags, randomSearch, averageScore } = props;
   // const [mainCast, setMainCast] = useState("");
   // const [trait, setTrait] = useState("");
   // const [scene, setScene] = useState("");
@@ -30,9 +31,11 @@ export default function TagDisplay(props: {
     for (const cat of categories) {
       const catEntries: [string, any][] = Object.entries(tempTags[cat]);
       for (const tag of catEntries) {
+        // console.log(tag);
         let ranks = 0;
         for (const entry of tag[1]) {
-          ranks += tagMediaSorting(entry);
+          ranks +=
+            tagMediaSorting(entry) * (entry.status === "COMPLETED" ? 1 : -1);
         }
         if (!tempTags[cat][tag[0]].listScore) {
           const score: number = Math.floor(ranks / tag[1].length);
@@ -45,8 +48,7 @@ export default function TagDisplay(props: {
       );
       tempTags[cat].keys = keys;
     }
-    // console.log(tempTags)
-    randomSearch(tempTags)
+    randomSearch(tempTags);
     setDisplayTags(tempTags);
     setLoading(false);
   }, []);

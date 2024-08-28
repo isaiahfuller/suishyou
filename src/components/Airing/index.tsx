@@ -22,7 +22,7 @@ export default function Airing(props: { tags: { [key: string]: any } }) {
           lastPage
           hasNextPage
         }
-        media(status:RELEASING, seasonYear:${currentDate.getFullYear()}, isAdult:false, format_in:[TV,OVA,ONA]) {
+        media(status:RELEASING, seasonYear:${currentDate.getFullYear()}, format_in:[TV,OVA,ONA]) {
           id
           title {
             romaji
@@ -41,12 +41,12 @@ export default function Airing(props: { tags: { [key: string]: any } }) {
           type
           genres
           meanScore
+          isAdult
           tags {
             name
             category
             id
             rank
-            isAdult
           }
         }
       }
@@ -70,7 +70,7 @@ export default function Airing(props: { tags: { [key: string]: any } }) {
         const newList = [...tempList, ...media];
         if (pageInfo.total === newList.length) {
           setList(newList);
-          airingSort(newList);
+          airingSort(newList.filter((e) => !e.isAdult));
         } else getAiringAnime(page + 1, newList);
       });
   }

@@ -3,6 +3,7 @@ import Entry from "../Entry";
 import { AnimeEntry } from "../../interfaces";
 import { motion, useAnimate } from "framer-motion";
 import "./index.css";
+import { Flex, Group, ScrollArea } from "@mantine/core";
 
 interface props {
   recommendations: AnimeEntry[];
@@ -12,7 +13,7 @@ export default function Carousel({ recommendations }: props) {
   const [scope, animate] = useAnimate();
   const [idx, setIdx] = useState(0);
   const [transform, setTransform] = useState(0);
-  console.log(recommendations)
+  // console.log(recommendations);
 
   // 208px per entry
   function paginate(direction: number) {
@@ -35,28 +36,37 @@ export default function Carousel({ recommendations }: props) {
     }
     setTransform(newTransform);
   }
+  // return (
+  //   <div className="carousel-container">
+  //     <div className="carousel-box">
+  //       <motion.div
+  //         className="carousel"
+  //         ref={scope}
+  //         drag="x"
+  //         dragMomentum={false}
+  //         onDragEnd={(_, info) =>
+  //           paginate(-Math.round(info.offset.x / 208))
+  //         }
+  //       >
+  //         {recommendations.map((e: AnimeEntry) => (
+  //           <Entry key={e.id} entry={e} />
+  //         ))}
+  //       </motion.div>
+  //     </div>
+  //     <div className="carousel-nav">
+  //       <button onClick={()=> paginate(-1)}>{"<"}</button>{" "}
+  //       <motion.div className="progress-bar" style={{ scaleX: (idx)/recommendations.length }} />
+  //       <button onClick={()=> paginate(1)}>{">"}</button>
+  //     </div>
+  //   </div>
+  // );
   return (
-    <div className="carousel-container">
-      <div className="carousel-box">
-        <motion.div
-          className="carousel"
-          ref={scope}
-          drag="x"
-          dragMomentum={false}
-          onDragEnd={(_, info) =>
-            paginate(-Math.round(info.offset.x / 208))
-          }
-        >
-          {recommendations.map((e: AnimeEntry) => (
-            <Entry key={e.id} entry={e} />
-          ))}
-        </motion.div>
-      </div>
-      <div className="carousel-nav">
-        <button onClick={()=> paginate(-1)}>{"<"}</button>{" "}
-        <motion.div className="progress-bar" style={{ scaleX: (idx)/recommendations.length }} />
-        <button onClick={()=> paginate(1)}>{">"}</button>
-      </div>
-    </div>
+    <ScrollArea className="carousel-container" h="336px" scrollbars="x">
+      <Group wrap="nowrap" w="full">
+        {recommendations.map((e: AnimeEntry) => (
+          <Entry key={e.id} entry={e} />
+        ))}
+      </Group>
+    </ScrollArea>
   );
 }

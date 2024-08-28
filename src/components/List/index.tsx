@@ -2,16 +2,18 @@ import { useEffect, useState } from "react";
 import "./index.css";
 import TagDisplay from "../TagDisplay";
 import Carousel from "../Carousel";
-import { AnimeEntry, AnimeListEntry } from "../../interfaces";
+import { AnimeEntry, AnimeList } from "../../interfaces";
 import Airing from "../Airing";
+import { Accordion, Box, Button } from "@mantine/core";
 
 export default function List(props: { accessToken: string }) {
   const { accessToken } = props;
-  const [animeList, setAnimeList] = useState<AnimeListEntry[]>([]);
+  const [animeList, setAnimeList] = useState<AnimeList[]>([]);
   const [tagList, setTags] = useState({});
   const [recommendations, setRecs] = useState<AnimeEntry[] | Array<any>>([]);
   const [usedTags, setUsedTags] = useState<string[]>([]);
   const [displayTags, setDisplayTags] = useState(structuredClone(tagList));
+  const [averageScore, setAverageScore] = useState(50);
 
   useEffect(() => {
     const query = `
@@ -21,23 +23,31 @@ export default function List(props: { accessToken: string }) {
       }
     }
     `;
-    fetch("https://graphql.anilist.co", {
-      method: "POST",
-      headers: {
-        Authorization: "Bearer " + accessToken,
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      },
-      body: JSON.stringify({
-        query: query,
-      }),
-    })
-      .then((res) => res.json())
-      .then((res) => {
-        // console.log(res.data.Viewer.id);
-        const id = parseInt(res.data.Viewer.id);
-        getList(id);
-      });
+    const list = localStorage.getItem("full-list");
+    const tags = localStorage.getItem("full-tags");
+    if (list && tags) {
+      console.log(list, tags);
+      console.log("List/tags from storage");
+      setAnimeList(JSON.parse(list));
+      setTags(JSON.parse(tags));
+    } else {
+      fetch("https://graphql.anilist.co", {
+        method: "POST",
+        headers: {
+          Authorization: "Bearer " + accessToken,
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          query: query,
+        }),
+      })
+        .then((res) => res.json())
+        .then((res) => {
+          const id = parseInt(res.data.Viewer.id);
+          getList(id);
+        });
+    }
   }, []);
 
   function getList(id: number) {
@@ -96,44 +106,47 @@ export default function List(props: { accessToken: string }) {
     })
       .then((res) => res.json())
       .then((res) => {
-        const combinedList: AnimeListEntry[] = [];
         // const name: string = res.data.MediaListCollection.user.name;
         const lists = res.data.MediaListCollection.lists.filter(
-          (e: { status: string }) => e.status === "COMPLETED"
+          (e: { status: string }) => ["COMPLETED", "DROPPED"].includes(e.status)
         );
+        let scores = 0;
+        let entryCount = 0;
         for (const list of lists) {
-          combinedList.push(...list.entries);
+          for (const entry of list.entries) {
+            scores += entry.score;
+            if (entry.score) entryCount++;
+          }
         }
-        setAnimeList(
-          combinedList
-            .sort((a, b) =>
-              a.media.title.userPreferred.toLowerCase() >
-              b.media.title.userPreferred.toLowerCase()
-                ? 1
-                : -1
-            )
-            .filter((e) => e.score > 0)
-        );
-        setTags(getTags(combinedList.filter((e) => e.score > 0)));
+        setAverageScore(scores / entryCount);
+        const calcTags = getTags(lists);
+        localStorage.setItem("full-list", JSON.stringify(lists));
+        localStorage.setItem("full-tags", JSON.stringify(calcTags));
+        setAnimeList(lists);
+        setTags(calcTags);
       });
   }
 
-  function getTags(list: AnimeListEntry[] = animeList) {
+  function getTags(lists = animeList) {
     const tags: { [key: string]: any } = {};
-    for (const entry of list) {
-      for (const tag of entry.media.tags) {
-        if (tag.isAdult) continue;
-        // if(tag.category.startsWith("Theme")) tag.category = "Theme"
-        if (!(tag.category in tags)) tags[tag.category] = {};
-        if (!(tag.name in tags[tag.category])) {
-          tags[tag.category][tag.name] = [];
+    console.log(lists);
+    for (const list of lists) {
+      for (const entry of list.entries) {
+        for (const tag of entry.media.tags) {
+          if (tag.isAdult) continue;
+          // if(tag.category.startsWith("Theme")) tag.category = "Theme"
+          if (!(tag.category in tags)) tags[tag.category] = {};
+          if (!(tag.name in tags[tag.category])) {
+            tags[tag.category][tag.name] = [];
+          }
+          tags[tag.category][tag.name].push({
+            mediaId: entry.media.id,
+            mediaName: entry.media.title.userPreferred,
+            tagRank: tag.rank,
+            entryScore: entry.score > 0 ? entry.score : averageScore,
+            status: list.status,
+          });
         }
-        tags[tag.category][tag.name].push({
-          mediaId: entry.media.id,
-          mediaName: entry.media.title.userPreferred,
-          tagRank: tag.rank,
-          entryScore: entry.score,
-        });
       }
     }
     return tags;
@@ -145,8 +158,6 @@ export default function List(props: { accessToken: string }) {
   }
 
   async function randomSearch(tags: { [key: string]: any } = displayTags) {
-    // console.log(tags);
-    // console.log(tags["Cast-Main Cast"].keys);
     const mainCast = tags["Cast-Main Cast"].keys.sort(
       (a: string | number, b: string | number) =>
         tags["Cast-Main Cast"][b].listScore -
@@ -173,7 +184,6 @@ export default function List(props: { accessToken: string }) {
       (a: string | number, b: string | number) =>
         tags["Demographic"][b].listScore - tags["Demographic"][a].listScore
     );
-    // console.log(mainCast, trait, setting, scene, time, demographic);
     const idxs = [
       weightedRandom(1, mainCast.length) - 1,
       weightedRandom(1, trait.length) - 1,
@@ -182,7 +192,6 @@ export default function List(props: { accessToken: string }) {
       weightedRandom(1, time.length) - 1,
       weightedRandom(1, demographic.length) - 1,
     ];
-    // console.log(idxs);
     search(
       `"${mainCast[idxs[0]]}"`,
       `"${trait[idxs[1]]}"`,
@@ -203,7 +212,6 @@ export default function List(props: { accessToken: string }) {
   ) {
     await delay(100);
     const tags = [mainCast, trait, setting, scene, time, demographic];
-    // console.log(tags);
     const currentTags = new Set();
     let results = [];
     let attempts = 0;
@@ -215,7 +223,6 @@ export default function List(props: { accessToken: string }) {
       });
       str = str.substring(0, str.length - 2);
       if (usedTags.includes(str)) continue;
-      // console.log(usedTags, str);
       const query = `
       {
         Page(page:0, perPage:10){
@@ -264,8 +271,6 @@ export default function List(props: { accessToken: string }) {
           );
           if (results.length) {
             attempts = 0;
-            // console.log(results);
-            // console.log(tagNames);
             setRecs([...recommendations, results]);
             setUsedTags((prev) => [...prev, str]);
           } else attempts++;
@@ -276,7 +281,6 @@ export default function List(props: { accessToken: string }) {
         currentTags.clear();
       }
     } while (!results.length);
-    // console.log(usedTags);
   }
 
   if (animeList && animeList.length) {
@@ -288,30 +292,35 @@ export default function List(props: { accessToken: string }) {
           randomSearch={randomSearch}
           setDisplayTags={setDisplayTags}
           displayTags={displayTags}
+          averageScore={averageScore}
         />
         {Object.keys(displayTags).length ? <Airing tags={displayTags} /> : null}
         <div />
         <hr />
         <div className="results-header">
           <h1 className="flex-shrink">Recommended by tags</h1>
-          <div className="flex-grow" />
         </div>
-        <div className="results">
-          {recommendations.length
-            ? recommendations.map((e, i) => {
-                return (
-                  <div key={i}>
-                    <div>
-                      <h2 className="py-2">{[...usedTags[i]]}</h2>
-                      <div>
+        <Box className="results w-full m-auto px-16">
+          <Accordion w="full" multiple={false}>
+            {recommendations.length
+              ? recommendations.map((e, i) => {
+                  return (
+                    <Accordion.Item value={usedTags[i]} w="full" key={i}>
+                      <Accordion.Control w="full">
+                        {usedTags[i]}
+                      </Accordion.Control>
+                      <Accordion.Panel>
                         <Carousel recommendations={e} />
-                      </div>
-                    </div>
-                  </div>
-                );
-              })
-            : null}
-        </div>
+                      </Accordion.Panel>
+                    </Accordion.Item>
+                  );
+                })
+              : null}
+          </Accordion>
+        </Box>
+        <Button className="m-2" onClick={() => randomSearch()}>
+          Load more...
+        </Button>
       </div>
     );
   } else return <p>Loading...</p>;
