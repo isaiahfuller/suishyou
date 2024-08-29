@@ -7,7 +7,7 @@ html {
 }
 
 body {
-  @apply w-screen h-screen overflow-x-hidden
+  @apply w-screen h-screen overflow-x-hidden;
 }
 
 h1 {
@@ -28,8 +28,7 @@ select {
 }
 
 .main {
-  @apply h-screen w-screen;
-  @apply flex flex-col
+  @apply flex flex-col;
 }
 
 .button {

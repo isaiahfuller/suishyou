@@ -4,7 +4,7 @@ import TagDisplay from "../TagDisplay";
 import Carousel from "../ListScroll";
 import { AnimeEntry, AnimeList } from "../../interfaces";
 import Airing from "../Airing";
-import { Accordion, Box, Button } from "@mantine/core";
+import { Accordion, Box, Button, Flex, Stack, Title } from "@mantine/core";
 
 export default function List(props: { accessToken: string }) {
   const { accessToken } = props;
@@ -106,7 +106,6 @@ export default function List(props: { accessToken: string }) {
     })
       .then((res) => res.json())
       .then((res) => {
-        // const name: string = res.data.MediaListCollection.user.name;
         const lists = res.data.MediaListCollection.lists.filter(
           (e: { status: string }) => ["COMPLETED", "DROPPED"].includes(e.status)
         );
@@ -134,7 +133,6 @@ export default function List(props: { accessToken: string }) {
       for (const entry of list.entries) {
         for (const tag of entry.media.tags) {
           if (tag.isAdult) continue;
-          // if(tag.category.startsWith("Theme")) tag.category = "Theme"
           if (!(tag.category in tags)) tags[tag.category] = {};
           if (!(tag.name in tags[tag.category])) {
             tags[tag.category][tag.name] = [];
@@ -285,7 +283,7 @@ export default function List(props: { accessToken: string }) {
 
   if (animeList && animeList.length) {
     return (
-      <div className="content">
+      <Flex direction="column">
         <TagDisplay
           tags={tagList}
           search={search}
@@ -297,11 +295,11 @@ export default function List(props: { accessToken: string }) {
         {Object.keys(displayTags).length ? <Airing tags={displayTags} /> : null}
         <div />
         <hr />
-        <div className="results-header">
-          <h1 className="flex-shrink">Recommended by tags</h1>
-        </div>
-        <Box className="results w-full m-auto px-16">
-          <Accordion w="full" multiple={false}>
+        <Title className="results-header" order={1}>
+          Recommended by tags
+        </Title>
+        <Flex direction="column" className="results">
+          <Accordion multiple={false} className="w-full">
             {recommendations.length
               ? recommendations.map((e, i) => {
                   return (
@@ -317,11 +315,16 @@ export default function List(props: { accessToken: string }) {
                 })
               : null}
           </Accordion>
-        </Box>
-        <Button className="m-2" onClick={() => randomSearch()}>
-          Load more...
-        </Button>
-      </div>
+          <Button
+            fullWidth
+            variant="transparent"
+            className="m-2"
+            onClick={() => randomSearch()}
+          >
+            Load more...
+          </Button>
+        </Flex>
+      </Flex>
     );
   } else return <p>Loading...</p>;
 }

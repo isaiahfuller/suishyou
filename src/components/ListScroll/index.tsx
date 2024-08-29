@@ -9,7 +9,7 @@ interface props {
 
 export default function ListScroll({ recommendations }: props) {
   return (
-    <ScrollArea className="list-scroll-container" h="336px" scrollbars="x">
+    <ScrollArea scrollbars="x">
       <Group wrap="nowrap" w="full">
         {recommendations.map((e: AnimeEntry) => (
           <Entry key={e.id} entry={e} />

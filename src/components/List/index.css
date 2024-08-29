@@ -10,13 +10,9 @@ table * {
   @apply p-1;
 }
 
-.content {
-  @apply h-full w-full;
-  @apply flex flex-col justify-between;
-}
-
 .results {
-  @apply flex-col items-center m-auto;
+  @apply flex-col items-center m-auto w-full;
+  @apply px-16;
 }
 
 .results-header {
