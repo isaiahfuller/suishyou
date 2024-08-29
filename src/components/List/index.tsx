@@ -14,6 +14,7 @@ export default function List(props: { accessToken: string }) {
   const [usedTags, setUsedTags] = useState<string[]>([]);
   const [displayTags, setDisplayTags] = useState(structuredClone(tagList));
   const [averageScore, setAverageScore] = useState(50);
+  const [accordionString, setAccordionString] = useState<string | null>(null);
 
   useEffect(() => {
     const query = `
@@ -211,7 +212,7 @@ export default function List(props: { accessToken: string }) {
     await delay(100);
     const tags = [mainCast, trait, setting, scene, time, demographic];
     const currentTags = new Set();
-    let results = [];
+    let results: AnimeEntry[] = [];
     let attempts = 0;
     do {
       const tagNames = tags.filter((e) => !currentTags.has(e));
@@ -269,13 +270,14 @@ export default function List(props: { accessToken: string }) {
           );
           if (results.length) {
             attempts = 0;
-            setRecs([...recommendations, results]);
+            setRecs((prev) => [...prev, results]);
             setUsedTags((prev) => [...prev, str]);
+            setAccordionString(str);
           } else attempts++;
         });
       // break;
       if (attempts > 0 && attempts % 5 === 0) {
-        if (attempts === 25) break;
+        if (attempts === 15) break;
         currentTags.clear();
       }
     } while (!results.length);
@@ -299,12 +301,23 @@ export default function List(props: { accessToken: string }) {
           Recommended by tags
         </Title>
         <Flex direction="column" className="results">
-          <Accordion multiple={false} className="w-full">
+          <Accordion
+            multiple={false}
+            className="w-full"
+            value={accordionString}
+          >
             {recommendations.length
               ? recommendations.map((e, i) => {
                   return (
                     <Accordion.Item value={usedTags[i]} w="full" key={i}>
-                      <Accordion.Control w="full">
+                      <Accordion.Control
+                        w="full"
+                        onClick={() =>
+                          setAccordionString(
+                            accordionString === usedTags[i] ? null : usedTags[i]
+                          )
+                        }
+                      >
                         {usedTags[i]}
                       </Accordion.Control>
                       <Accordion.Panel>
