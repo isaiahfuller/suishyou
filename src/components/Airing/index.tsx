@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { AnimeEntry } from "../../interfaces";
-import Carousel from "../Carousel";
+import Carousel from "../ListScroll";
 
 export default function Airing(props: { tags: { [key: string]: any } }) {
   const { tags } = props;
@@ -64,7 +64,6 @@ export default function Airing(props: { tags: { [key: string]: any } }) {
     })
       .then((res) => res.json())
       .then(async (res) => {
-        // console.log(res.data.Page.media)
         const media: AnimeEntry[] = res.data.Page.media;
         const pageInfo = res.data.Page.pageInfo;
         const newList = [...tempList, ...media];

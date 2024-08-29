@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import "./index.css";
 import TagDisplay from "../TagDisplay";
-import Carousel from "../Carousel";
+import Carousel from "../ListScroll";
 import { AnimeEntry, AnimeList } from "../../interfaces";
 import Airing from "../Airing";
 import { Accordion, Box, Button } from "@mantine/core";
