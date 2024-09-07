@@ -6,10 +6,14 @@ import { AnimeEntry, AnimeList } from "../../interfaces";
 import Airing from "../Airing";
 import { Accordion, Box, Button, Flex, Stack, Title } from "@mantine/core";
 
-export default function List(props: { accessToken: string }) {
-  const { accessToken } = props;
-  const [animeList, setAnimeList] = useState<AnimeList[]>([]);
-  const [tagList, setTags] = useState({});
+export default function List(props: {
+  accessToken: string;
+  animeList: AnimeList[];
+  setAnimeList: (animeList: AnimeList[]) => void;
+  tagList: { [key: string]: any };
+  setTags: (tags: { [key: string]: any }) => void;
+}) {
+  const { accessToken, animeList, setAnimeList, tagList, setTags } = props;
   const [recommendations, setRecs] = useState<AnimeEntry[] | Array<any>>([]);
   const [usedTags, setUsedTags] = useState<string[]>([]);
   const [displayTags, setDisplayTags] = useState(structuredClone(tagList));
@@ -27,8 +31,6 @@ export default function List(props: { accessToken: string }) {
     const list = localStorage.getItem("full-list");
     const tags = localStorage.getItem("full-tags");
     if (list && tags) {
-      console.log(list, tags);
-      console.log("List/tags from storage");
       setAnimeList(JSON.parse(list));
       setTags(JSON.parse(tags));
     } else {
@@ -129,7 +131,6 @@ export default function List(props: { accessToken: string }) {
 
   function getTags(lists = animeList) {
     const tags: { [key: string]: any } = {};
-    console.log(lists);
     for (const list of lists) {
       for (const entry of list.entries) {
         for (const tag of entry.media.tags) {
@@ -215,13 +216,20 @@ export default function List(props: { accessToken: string }) {
     let results: AnimeEntry[] = [];
     let attempts = 0;
     do {
+      if (attempts > 0 && attempts % 5 === 0) {
+        if (attempts === 12) break;
+        currentTags.clear();
+      }
       const tagNames = tags.filter((e) => !currentTags.has(e));
       let str = "";
       tagNames.forEach((e) => {
         str += e.replace(/"/g, "") + ", ";
       });
       str = str.substring(0, str.length - 2);
-      if (usedTags.includes(str)) continue;
+      if (usedTags.includes(str)) {
+        attempts++;
+        continue;
+      }
       const query = `
       {
         Page(page:0, perPage:10){
@@ -276,10 +284,6 @@ export default function List(props: { accessToken: string }) {
           } else attempts++;
         });
       // break;
-      if (attempts > 0 && attempts % 5 === 0) {
-        if (attempts === 15) break;
-        currentTags.clear();
-      }
     } while (!results.length);
   }
 

@@ -27,7 +27,6 @@ export default function TagDisplay(props: {
 
   useEffect(() => {
     const tempTags = structuredClone(tags);
-    console.log(tempTags);
     for (const cat of categories) {
       const catEntries: [string, any][] = Object.entries(tempTags[cat]);
       for (const tag of catEntries) {

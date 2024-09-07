@@ -1,10 +1,12 @@
-import { AppShell, Box, Burger, Group } from "@mantine/core";
+import { AppShell, Box, Burger, Group, NavLink, Skeleton } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import App from "../../App";
-import Navbar from "../Navbar";
 import { useEffect, useState } from "react";
 
+const pages = ["Recommendations", "Charts"];
+
 export default function Shell() {
+  const [page, setPage] = useState(0);
   const [loggedIn, setLoggedIn] = useState(false);
   const [accessToken, setAccessToken] = useState(
     localStorage.getItem("anilist-token") || ""
@@ -34,6 +36,11 @@ export default function Shell() {
     } else setLoggedIn(false);
   }, []);
 
+  function handleClick(e: React.MouseEvent<HTMLAnchorElement>, idx: number) {
+    e.preventDefault();
+    setPage(idx);
+  }
+
   return (
     <AppShell
       header={{ height: 60 }}
@@ -43,6 +50,7 @@ export default function Shell() {
         collapsed: { mobile: !opened },
       }}
       padding="md"
+      withBorder={false}
     >
       <AppShell.Header>
         <Group justify="space-between" m={8}>
@@ -73,10 +81,19 @@ export default function Shell() {
         </Group>
       </AppShell.Header>
 
-      <AppShell.Navbar p="md"></AppShell.Navbar>
+      <AppShell.Navbar p="md">
+        {pages.map((e, i) => (
+          <NavLink
+            href={e.toLowerCase()}
+            label={e}
+            key={i}
+            onClick={(e) => handleClick(e, i)}
+          />
+        ))}
+      </AppShell.Navbar>
 
       <AppShell.Main>
-        <App loggedIn={loggedIn} accessToken={accessToken} />
+        <App loggedIn={loggedIn} accessToken={accessToken} page={page} />
       </AppShell.Main>
     </AppShell>
   );
