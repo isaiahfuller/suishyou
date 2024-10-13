@@ -1,40 +1,39 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { AnimeList, AnimeListEntry } from "../../interfaces";
 import { Stack } from "@mantine/core";
-import { Bar, BarChart, XAxis, YAxis, Tooltip, Legend } from "recharts";
+import { Bar, BarChart, XAxis, YAxis, Tooltip } from "recharts";
 
+interface Tag {
+  [key: string]: {
+    [key: string]: {
+      entryScore: number;
+      mediaId: number;
+      mediaName: string;
+      status: string;
+      tagRank: number;
+    }[];
+  };
+}
 interface ChartsProps {
   animeList: AnimeList[];
-  tagList: { [key: string]: any };
+  tagList: { [key: string]: Tag[] };
+}
+interface Decade {
+  [key: number]: {
+    entries: AnimeListEntry[];
+    decade: string;
+    avg: number;
+    totalScore: number;
+    length: number;
+  };
 }
 export default function Charts({ animeList, tagList }: ChartsProps) {
-  const [decades, setDecades] = useState<{
-    [key: number]: {
-      decade: string;
-      avg: number;
-      totalScore: number;
-      entry: AnimeListEntry;
-    };
-  }>({});
-  useEffect(() => {
-    console.log(animeList);
-    console.log(tagList);
-    const tags = {};
-    for (const [k, v] of Object.entries(tagList)) {
-      // console.log(k, v);
-      console.log(k.split("-")[0]);
-      const sset = k.split("-")[0];
-      if (!tags[sset]) tags[sset] = {};
-      const current = tags[sset];
-      tags[sset] = { ...current, ...v };
-    }
-    // console.log("tags", tags);
-    getDecadesAvg();
-  }, []);
+  const [decades, setDecades] = useState<Decade>({});
+  tagList;
 
-  function getDecadesAvg() {
+  const getDecadesAvg = useCallback(() => {
     const completedCombined = [];
-    const decades = {};
+    const decades: Decade = {};
     for (const list of animeList.filter((e) => e.status === "COMPLETED")) {
       console.log(list.entries);
       for (const entry of list.entries) {
@@ -42,7 +41,6 @@ export default function Charts({ animeList, tagList }: ChartsProps) {
       }
     }
     completedCombined.sort((a, b) => a.media.seasonYear - b.media.seasonYear);
-    console.log(completedCombined);
     for (const entry of completedCombined) {
       const decade = 10 * Math.floor(entry.media.seasonYear / 10);
       if (!decades[decade])
@@ -58,9 +56,20 @@ export default function Charts({ animeList, tagList }: ChartsProps) {
       if (entry.score) decades[decade].length++;
       decades[decade].avg = decades[decade].totalScore / decades[decade].length;
     }
-    console.log(decades);
     setDecades(decades);
-  }
+  }, [animeList]);
+
+  useEffect(() => {
+    //     const tags: Tag = {};
+    // for (const [k, v] of Object.entries(tagList)) {
+    //   const sset = k.split("-")[0];
+    //   if (!tags[sset]) tags[sset] = {};
+    // const current = tags[sset];
+    // tags[sset] = { ...current, ...v };
+    // }
+    // console.log("tags", tags);
+    getDecadesAvg();
+  }, [getDecadesAvg]);
 
   return (
     <Stack>

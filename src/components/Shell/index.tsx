@@ -1,4 +1,4 @@
-import { AppShell, Box, Burger, Group, NavLink, Skeleton } from "@mantine/core";
+import { AppShell, Box, Burger, Group, NavLink } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import App from "../../App";
 import { useEffect, useState } from "react";
