@@ -1,103 +1,34 @@
 import { useState, useEffect } from "react";
 import { AnimeEntry } from "../../interfaces";
 import Carousel from "../ListScroll";
+import { rankTags } from "../../utils/rankTags";
+import { getAiringAnime } from "../../utils/getAiringAnime";
+import { Accordion } from "@mantine/core";
 
 export default function Airing(props: { tags: { [key: string]: any } }) {
-  const { tags } = props;
+  const tags = rankTags(props.tags);
   const [list, setList] = useState<AnimeEntry[]>([]);
-  const [loading, setLoading] = useState(true);
   useEffect(() => {
-    getAiringAnime(1, []);
+    getAiringAnime(1, [], tags).then((entries) => setList(entries));
+    console.log(list);
   }, []);
 
-  function getAiringAnime(page = 1, tempList: AnimeEntry[]) {
-    const currentDate = new Date();
-    const query = `
-    {
-      Page(page: ${page}) {
-        pageInfo {
-          total
-          perPage
-          currentPage
-          lastPage
-          hasNextPage
-        }
-        media(status:RELEASING, seasonYear:${currentDate.getFullYear()}, format_in:[TV,OVA,ONA]) {
-          id
-          title {
-            romaji
-            english
-            native
-            userPreferred
-          }
-          coverImage {
-            extraLarge
-            large
-            medium
-            color
-          }
-          siteUrl
-          episodes
-          type
-          genres
-          meanScore
-          isAdult
-          tags {
-            name
-            category
-            id
-            rank
-          }
-        }
-      }
-    }
-    `;
-    fetch("https://graphql.anilist.co", {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        query: query,
-      }),
-    })
-      .then((res) => res.json())
-      .then(async (res) => {
-        const media: AnimeEntry[] = res.data.Page.media;
-        const pageInfo = res.data.Page.pageInfo;
-        const newList = [...tempList, ...media];
-        if (pageInfo.total === newList.length) {
-          setList(newList);
-          airingSort(newList.filter((e) => !e.isAdult));
-        } else getAiringAnime(page + 1, newList);
-      });
-  }
+  useEffect(() => {
+    console.log(list);
+  }, [list]);
 
-  function airingSort(entries = list) {
-    const scores = new Map();
-    for (const entry of entries) {
-      for (const tag of entry.tags) {
-        if (!tags[tag.category] || !tags[tag.category][tag.name]) continue;
-        const score = tags[tag.category][tag.name].listScore * (tag.rank / 100);
-        scores.set(
-          entry.id,
-          scores.has(entry.id) ? scores.get(entry.id) + score : score
-        );
-      }
-    }
-    const newEntries = entries.sort((a, b) => {
-      return scores.get(b.id) - scores.get(a.id);
-    });
-    setList(newEntries);
-    setLoading(false);
-  }
-  if (loading) return <p>Airing</p>;
-  else
+  if (list.length)
     return (
       <div className="results">
         <h1 className="py-2">Recommended Currently Airing</h1>
         <Carousel recommendations={list} />
+        <Accordion>
+          {list.map((e) => (
+            <Accordion.Item key={e.id} value={e.id + ""}>
+              <Accordion.Control>{e.title.userPreferred}</Accordion.Control>
+            </Accordion.Item>
+          ))}
+        </Accordion>
       </div>
     );
 }

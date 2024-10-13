@@ -2,8 +2,18 @@ import { AppShell, Box, Burger, Group, NavLink } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import App from "../../App";
 import { useEffect, useState } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCalendar, faThumbsUp } from "@fortawesome/free-regular-svg-icons";
+import {
+  faChartSimple,
+  faChevronRight,
+} from "@fortawesome/free-solid-svg-icons";
 
-const pages = ["Recommendations", "Charts"];
+const pages = [
+  { title: "Airing", icon: faCalendar },
+  { title: "Recommendations", icon: faThumbsUp },
+  { title: "Charts", icon: faChartSimple },
+];
 
 export default function Shell() {
   const [page, setPage] = useState(0);
@@ -61,7 +71,7 @@ export default function Shell() {
               hiddenFrom="sm"
               size="sm"
             />
-            <div>Logo</div>
+            <div>勧め</div>
           </Group>
           <div></div>
           <Box>
@@ -84,10 +94,12 @@ export default function Shell() {
       <AppShell.Navbar p="md">
         {pages.map((e, i) => (
           <NavLink
-            href={e.toLowerCase()}
-            label={e}
+            href="#"
+            label={e.title}
             key={i}
             onClick={(e) => handleClick(e, i)}
+            leftSection={<FontAwesomeIcon icon={e.icon} />}
+            rightSection={<FontAwesomeIcon icon={faChevronRight} size="xs" />}
           />
         ))}
       </AppShell.Navbar>
