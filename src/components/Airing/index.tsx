@@ -95,11 +95,9 @@ export default function Airing(props: { tags: { [key: string]: any } }) {
           <Flex w="100%" justify="center" align="center">
             {e.trailer ? (
               <>
-                <Button>
-                  <a target="_blank" href={`https://youtu.be/${e.trailer.id}`}>
-                    Watch trailer
-                  </a>{" "}
-                </Button>
+                <a target="_blank" href={`https://youtu.be/${e.trailer.id}`}>
+                  <Button>Watch trailer</Button>{" "}
+                </a>
                 <Divider orientation="vertical" px={4} />
               </>
             ) : null}
