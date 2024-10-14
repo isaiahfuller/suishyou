@@ -4,3 +4,7 @@
   }
   rotate: -90deg;
 }
+
+.item {
+  box-shadow: var(--mantine-shadow-sm);
+}

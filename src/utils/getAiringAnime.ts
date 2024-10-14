@@ -56,6 +56,7 @@ export async function getAiringAnime(
             color
             notes
             isDisabled
+            icon
           }
           averageScore
           airingSchedule {

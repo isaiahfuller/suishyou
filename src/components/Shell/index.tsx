@@ -1,4 +1,14 @@
-import { AppShell, Box, Burger, Group, NavLink } from "@mantine/core";
+import {
+  AppShell,
+  Box,
+  Burger,
+  Button,
+  Group,
+  NavLink,
+  Stack,
+  Text,
+  Title,
+} from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import App from "../../App";
 import { useEffect, useState } from "react";
@@ -22,7 +32,6 @@ export default function Shell() {
     localStorage.getItem("anilist-token") || ""
   );
   const [opened, { toggle }] = useDisclosure();
-
   function logOut() {
     setLoggedIn(false);
     setAccessToken("");
@@ -63,29 +72,34 @@ export default function Shell() {
       withBorder={false}
     >
       <AppShell.Header>
-        <Group justify="space-between" m={8}>
-          <Group>
+        <Group justify="space-between" align="center" m={8} h={60}>
+          <Group align="center">
             <Burger
               opened={opened}
               onClick={toggle}
               hiddenFrom="sm"
               size="sm"
             />
-            <div>勧め</div>
+            <Stack align="center">
+              <Title size="h6" lh={0.1}>
+                勧め
+              </Title>
+              <Text lh={0} size="xs" c="dimmed">
+                susume
+              </Text>
+            </Stack>
           </Group>
-          <div></div>
           <Box>
             {loggedIn ? (
-              <button className="button" onClick={() => logOut()}>
+              <Button variant="subtle" onClick={() => logOut()}>
                 Log Out
-              </button>
+              </Button>
             ) : (
-              <a
-                className="button"
-                href="https://anilist.co/api/v2/oauth/authorize?client_id=10680&response_type=token"
-              >
-                Login with AniList
-              </a>
+              <Button>
+                <a href="https://anilist.co/api/v2/oauth/authorize?client_id=10680&response_type=token">
+                  Login with AniList
+                </a>
+              </Button>
             )}
           </Box>
         </Group>

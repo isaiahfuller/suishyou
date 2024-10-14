@@ -23,8 +23,28 @@ export interface AnimeEntry {
   coverImage: {
     large: string;
   };
+  trailer: {
+    site: string;
+    id: string;
+  };
   siteUrl: string;
   isAdult: boolean;
+  description: string;
+  externalLinks: {
+    language: string;
+    isDisabled: boolean;
+    site: string;
+    type: string;
+    url: string;
+    siteId: number;
+    color: string;
+    icon: string;
+  }[];
+  rankings: {
+    rank: number;
+    context: string;
+    type: string;
+  }[];
 }
 
 export interface AnimeListEntry {
