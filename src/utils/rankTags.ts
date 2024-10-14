@@ -7,11 +7,11 @@ export function rankTags(tags: any) {
     for (const tag of catEntries) {
       let ranks = 0;
       for (const entry of tag[1]) {
-        ranks +=
-          tagMediaSorting(entry) * (entry.status === "COMPLETED" ? 1 : -1);
+        ranks += tagMediaSorting(entry);
       }
       if (!tempTags[cat][tag[0]].listScore) {
         const score: number = Math.floor(ranks / tag[1].length);
+        // console.log(score);
         tempTags[cat][tag[0]].listScore = score;
       }
     }

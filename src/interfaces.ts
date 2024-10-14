@@ -45,6 +45,12 @@ export interface AnimeEntry {
     context: string;
     type: string;
   }[];
+  relations: {
+    edges: {
+      relationType: string;
+      node: AnimeEntry;
+    }[];
+  };
 }
 
 export interface AnimeListEntry {

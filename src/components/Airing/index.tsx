@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { AnimeEntry } from "../../interfaces";
+import { useState, useEffect, useMemo } from "react";
+import { AnimeEntry, AnimeList } from "../../interfaces";
 import { rankTags } from "../../utils/rankTags";
 import DOMPurify from "dompurify";
 import { getAiringAnime } from "../../utils/getAiringAnime";
@@ -24,14 +24,32 @@ import {
   faMedal,
 } from "@fortawesome/free-solid-svg-icons";
 
-export default function Airing(props: { tags: { [key: string]: any } }) {
-  const tags = rankTags(props.tags);
+export default function Airing(props: {
+  tags: { [key: string]: any };
+  animeList: AnimeList[];
+}) {
+  const { animeList } = props;
+  const [tags, _setTags] = rankTags(props.tags);
   const [list, setList] = useState<AnimeEntry[]>([]);
   const [descriptionLines, setDescriptionLines] = useState(5);
   const [activeItem, setActiveItem] = useState("");
+  const completedListIds = useMemo(() => {
+    const res = new Set<number>();
+    for (const list of animeList) {
+      for (const entry of list.entries) {
+        // console.log(entry.media.title.english);
+        res.add(entry.media.id);
+      }
+    }
+    return res;
+  }, [animeList]);
+
   useEffect(() => {
-    getAiringAnime(1, [], tags).then((entries) => setList(entries));
+    getAiringAnime(1, completedListIds, [], tags).then((entries) =>
+      setList(entries)
+    );
     console.log(list);
+    console.log(animeList);
   }, []);
 
   useEffect(() => {

@@ -2,6 +2,7 @@ import { AnimeEntry } from "../interfaces";
 
 export async function getAiringAnime(
   page = 1,
+  animeList: Set<number>,
   tempList: AnimeEntry[],
   tags: any
 ): Promise<AnimeEntry[]> {
@@ -76,6 +77,14 @@ export async function getAiringAnime(
             allTime
             context
           }
+          relations {
+            edges {
+              relationType
+              node {
+                id
+              }
+            }
+          }
         }
       }
     }
@@ -97,22 +106,38 @@ export async function getAiringAnime(
   if (pageInfo.total === newList.length) {
     return airingSort(
       newList.filter((e) => !e.isAdult),
-      tags
+      tags,
+      animeList
     );
-  } else return getAiringAnime(page + 1, newList, tags);
+  } else return getAiringAnime(page + 1, animeList, newList, tags);
 }
-function airingSort(entries: AnimeEntry[], tags: any): AnimeEntry[] {
+function airingSort(
+  entries: AnimeEntry[],
+  tags: any,
+  animeList: Set<number>
+): AnimeEntry[] {
   const scores = new Map();
   for (const entry of entries) {
     for (const tag of entry.tags) {
       if (!tags[tag.category] || !tags[tag.category][tag.name]) continue;
       const score = tags[tag.category][tag.name].listScore * (tag.rank / 100);
+      // console.log(score);
       scores.set(
         entry.id,
         scores.has(entry.id) ? scores.get(entry.id) + score : score
       );
     }
+    scores.set(entry.id, scores.get(entry.id) / entry.tags.length);
+    if (entry.relations) {
+      for (const edge of entry.relations.edges) {
+        if (edge.relationType === "PREQUEL" && !animeList.has(edge.node.id))
+          scores.set(entry.id, scores.get(entry.id) / 2);
+        if (edge.relationType === "PREQUEL" && animeList.has(edge.node.id))
+          scores.set(entry.id, scores.get(entry.id) * 1.2);
+      }
+    }
   }
+  console.log(scores);
   const newEntries: AnimeEntry[] = entries.sort(
     (a: AnimeEntry, b: AnimeEntry) => {
       return scores.get(b.id) - scores.get(a.id);

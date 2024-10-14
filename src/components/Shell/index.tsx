@@ -48,6 +48,7 @@ export default function Shell() {
       localStorage.setItem("anilist-token", accessToken);
       localStorage.setItem("anilist-expires", expiresAt + "");
       setAccessToken(accessToken);
+      window.location.replace("");
     }
     const tokenTime = localStorage.getItem("anilist-expires");
     if (tokenTime && new Date(tokenTime) > new Date()) {
@@ -95,11 +96,9 @@ export default function Shell() {
                 Log Out
               </Button>
             ) : (
-              <Button>
-                <a href="https://anilist.co/api/v2/oauth/authorize?client_id=10680&response_type=token">
-                  Login with AniList
-                </a>
-              </Button>
+              <a href="https://anilist.co/api/v2/oauth/authorize?client_id=10680&response_type=token">
+                <Button>Login with AniList</Button>
+              </a>
             )}
           </Box>
         </Group>

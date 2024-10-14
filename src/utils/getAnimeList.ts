@@ -62,9 +62,11 @@ export async function getAnimeList(
   })
     .then((res) => res.json())
     .then((res) => {
-      const lists = res.data.MediaListCollection.lists.filter(
-        (e: { status: string }) => ["COMPLETED", "DROPPED"].includes(e.status)
-      );
+      // const lists = res.data.MediaListCollection.lists.filter(
+      //   (e: { status: string }) =>
+      //     ["COMPLETED", "DROPPED", "PLANNING"].includes(e.status)
+      // );
+      const lists = res.data.MediaListCollection.lists;
       let scores = 0;
       let entryCount = 0;
       for (const list of lists) {

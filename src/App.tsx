@@ -16,9 +16,8 @@ function App({ loggedIn, accessToken, page }: AppProps) {
   const [idx, setIdx] = useState(page || 0);
   const [animeList, setAnimeList] = useState<AnimeList[]>([]);
   const [tagList, setTags] = useState({});
-  const [usedTags, setUsedTags] = useState<string[]>([]);
-  const [displayTags, setDisplayTags] = useState(structuredClone(tagList));
-  const [averageScore, setAverageScore] = useState(50);
+  const [usedTags, _setUsedTags] = useState<string[]>([]);
+  const [_averageScore, setAverageScore] = useState(50);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -193,7 +192,7 @@ function App({ loggedIn, accessToken, page }: AppProps) {
   }
   switch (idx) {
     case 0:
-      return <Airing tags={tagList} />;
+      return <Airing tags={tagList} animeList={animeList} />;
     case 1:
       return (
         <div className="main">
