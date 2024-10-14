@@ -29,7 +29,7 @@ export default function Airing(props: {
   animeList: AnimeList[];
 }) {
   const { animeList } = props;
-  const [tags, _setTags] = rankTags(props.tags);
+  const [tags, _setTags] = useState(rankTags(props.tags));
   const [list, setList] = useState<AnimeEntry[]>([]);
   const [descriptionLines, setDescriptionLines] = useState(5);
   const [activeItem, setActiveItem] = useState("");
@@ -73,7 +73,7 @@ export default function Airing(props: {
             setActiveItem(e.id + "");
           }}
         >
-          <Group justify="space-between">
+          <Flex justify="space-between">
             <Group>
               <Image src={e.coverImage.large} w={64} px={8} />
               <Stack maw="80%">
@@ -81,7 +81,7 @@ export default function Airing(props: {
               </Stack>
             </Group>
             <Space />
-            <span>
+            <Flex>
               {popular ? (
                 <Text span p={1}>
                   <FontAwesomeIcon icon={faFireFlameCurved} color="#ed333b" />
@@ -92,8 +92,8 @@ export default function Airing(props: {
                   <FontAwesomeIcon icon={faMedal} color="#f5c211" />
                 </Text>
               ) : null}
-            </span>
-          </Group>
+            </Flex>
+          </Flex>
         </Accordion.Control>
         <Accordion.Panel>
           <Flex>
