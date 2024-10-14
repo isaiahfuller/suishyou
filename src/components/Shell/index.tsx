@@ -80,11 +80,11 @@ export default function Shell() {
               hiddenFrom="sm"
               size="sm"
             />
-            <Stack align="center">
-              <Title size="h6" lh={0.1}>
+            <Stack align="center" p={24}>
+              <Title size="h4" lh={0.1}>
                 勧め
               </Title>
-              <Text lh={0} size="xs" c="dimmed">
+              <Text lh={0} size="sm" c="dimmed">
                 susume
               </Text>
             </Stack>
