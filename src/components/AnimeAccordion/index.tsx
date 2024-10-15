@@ -19,18 +19,36 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import DOMPurify from "dompurify";
 import { useEffect, useState } from "react";
+import { useViewportSize } from "@mantine/hooks";
 
 export default function AnimeAccordion(props: { list: AnimeEntry[] }) {
   const { list } = props;
   const [descriptionLines, setDescriptionLines] = useState(5);
   const [activeItem, setActiveItem] = useState("");
+  const { width } = useViewportSize();
 
   const items = list.map((e) => {
-    let rated = false;
-    let popular = false;
+    const rated = [];
+    const popular = [];
     for (const r of e.rankings) {
-      if (r.type === "RATED") rated = true;
-      if (r.type === "POPULAR") popular = true;
+      if (r.type === "RATED") {
+        rated.push(
+          `#${r.rank} ${r.context} ${
+            r.season
+              ? r.season[0] + r.season.substring(1).toLowerCase() + " "
+              : ""
+          }${r.year ? r.year : ""}`
+        );
+      }
+      if (r.type === "POPULAR") {
+        popular.push(
+          `#${r.rank} ${r.context} ${
+            r.season
+              ? r.season[0] + r.season.substring(1).toLowerCase() + " "
+              : ""
+          }${r.year ? r.year : ""}`
+        );
+      }
     }
     const description = DOMPurify.sanitize(e.description);
     return (
@@ -43,19 +61,21 @@ export default function AnimeAccordion(props: { list: AnimeEntry[] }) {
         >
           <Flex justify="space-between">
             <Group>
-              <Image src={e.coverImage.large} w={64} px={8} />
-              <Stack maw="80%">
+              {width > 400 ? (
+                <Image src={e.coverImage.large} w={64} px={8} />
+              ) : null}
+              <Stack maw="76%">
                 <Text>{e.title.userPreferred}</Text>
               </Stack>
             </Group>
             <Space />
             <Flex>
-              {popular ? (
+              {popular.length ? (
                 <Text span p={1}>
                   <FontAwesomeIcon icon={faFireFlameCurved} color="#ed333b" />
                 </Text>
               ) : null}
-              {rated ? (
+              {rated.length ? (
                 <Text span p={1}>
                   <FontAwesomeIcon icon={faMedal} color="#f5c211" />
                 </Text>
@@ -64,6 +84,22 @@ export default function AnimeAccordion(props: { list: AnimeEntry[] }) {
           </Flex>
         </Accordion.Control>
         <Accordion.Panel>
+          <Text c="dimmed" size="xs" fs="italic">
+            {rated.length ? (
+              <>
+                <FontAwesomeIcon icon={faMedal} color="#f5c211" />{" "}
+              </>
+            ) : null}
+            {rated.reverse().join(", ")}
+          </Text>
+          <Text c="dimmed" size="xs" fs="italic">
+            {popular.length ? (
+              <>
+                <FontAwesomeIcon icon={faFireFlameCurved} color="#ed333b" />{" "}
+              </>
+            ) : null}{" "}
+            {popular.reverse().join(", ")}
+          </Text>
           <Flex>
             <Text
               dangerouslySetInnerHTML={{ __html: description }}
@@ -78,30 +114,39 @@ export default function AnimeAccordion(props: { list: AnimeEntry[] }) {
                 : setDescriptionLines(0)
             }
           />
-          <Flex w="100%" justify="center" align="center">
+          <Flex
+            w="100%"
+            justify="center"
+            align="center"
+            direction={width > 510 ? "row" : "column"}
+          >
             {e.trailer ? (
               <>
                 <a target="_blank" href={`https://youtu.be/${e.trailer.id}`}>
                   <Button>Watch trailer</Button>{" "}
                 </a>
-                <Divider orientation="vertical" px={4} />
+                <Divider
+                  orientation={width > 510 ? "horizontal" : "vertical"}
+                  p={4}
+                />
               </>
             ) : null}
-            <Text span>Links: </Text>
-            {e.externalLinks.map((e) => {
-              return (
-                <a href={e.url} target="_blank" key={e.url}>
-                  <Image
-                    src={e.icon || faGlobe}
-                    w={24}
-                    bg={e.color || "black"}
-                    p={4}
-                    m={4}
-                    radius="md"
-                  />
-                </a>
-              );
-            })}
+            <Group>
+              {e.externalLinks.map((e) => {
+                return (
+                  <a href={e.url} target="_blank" key={e.url}>
+                    <Image
+                      src={e.icon || faGlobe}
+                      w={24}
+                      bg={e.color || "black"}
+                      p={4}
+                      m={4}
+                      radius="md"
+                    />
+                  </a>
+                );
+              })}
+            </Group>
           </Flex>
         </Accordion.Panel>
       </Accordion.Item>

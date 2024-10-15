@@ -44,6 +44,8 @@ export interface AnimeEntry {
     rank: number;
     context: string;
     type: string;
+    season: string;
+    year: number;
   }[];
   relations: {
     edges: {
