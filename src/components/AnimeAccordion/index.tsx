@@ -84,7 +84,7 @@ export default function AnimeAccordion(props: { list: AnimeEntry[] }) {
           </Flex>
         </Accordion.Control>
         <Accordion.Panel>
-          <Text c="dimmed" size="xs" fs="italic">
+          <Text c="dimmed" size="xs">
             {rated.length ? (
               <>
                 <FontAwesomeIcon icon={faMedal} color="#f5c211" />{" "}
@@ -92,7 +92,7 @@ export default function AnimeAccordion(props: { list: AnimeEntry[] }) {
             ) : null}
             {rated.reverse().join(", ")}
           </Text>
-          <Text c="dimmed" size="xs" fs="italic">
+          <Text c="dimmed" size="xs">
             {popular.length ? (
               <>
                 <FontAwesomeIcon icon={faFireFlameCurved} color="#ed333b" />{" "}
