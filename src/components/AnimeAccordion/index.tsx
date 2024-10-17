@@ -131,7 +131,7 @@ export default function AnimeAccordion(props: { list: AnimeEntry[] }) {
                 />
               </>
             ) : null}
-            <Group>
+            <Group gap={8}>
               {e.externalLinks.map((e) => {
                 return (
                   <a href={e.url} target="_blank" key={e.url}>
@@ -139,8 +139,7 @@ export default function AnimeAccordion(props: { list: AnimeEntry[] }) {
                       src={e.icon || faGlobe}
                       w={24}
                       bg={e.color || "black"}
-                      p={4}
-                      m={4}
+                      p={3}
                       radius="md"
                     />
                   </a>
